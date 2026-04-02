@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Reviewer</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 48px auto; padding: 0 24px; color: #1a1a1a; }
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+    p { color: #666; font-size: 14px; margin-top: 4px; }
+    textarea { width: 100%; height: 320px; font-family: monospace; font-size: 13px; padding: 12px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; resize: vertical; }
+    button { margin-top: 12px; padding: 10px 28px; background: #1a1a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    button:hover { background: #333; }
+    .result { margin-top: 28px; padding: 16px; background: #f6f8fa; border: 1px solid #e0e0e0; border-radius: 6px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Code Reviewer</h1>
+  <p>Paste your Python code and get a security analysis.</p>
+  <form action="/review" method="post">
+    <textarea name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
+    <br>
+    <button type="submit">Review code</button>
+  </form>
+  {% if result %}
+  <div class="result">{{ result }}</div>
+  {% endif %}
+</body>
+</html>
