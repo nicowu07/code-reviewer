@@ -16,6 +16,14 @@ async def home(request: Request):
 @app.post("/review", response_class=HTMLResponse)
 async def review(request: Request, code: str = Form(...)):
     line_count = len(code.splitlines())
+    char_count = len(code)
+    if char_count > 50000:
+        result = "Code limit reached, Please split in several submits!"
+        return templates.TemplateResponse(
+            request=request,
+            name='index.html',
+            context={"result": result, "code": ""}
+        )
     result = f"Received {line_count} lines of code. Analysis coming soon!"
     return templates.TemplateResponse(
         request=request,
