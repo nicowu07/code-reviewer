@@ -10,7 +10,7 @@ templates = Jinja2Templates(directory="templates")
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return templates.TemplateResponse(
-        request=request,
+        request=Request,
         name='error.html'
     )
 
