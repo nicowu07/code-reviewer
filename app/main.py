@@ -1,25 +1,14 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from app.exceptions import global_exception_handler, validation_exception_handler
 from fastapi.exceptions import RequestValidationError
+from app.config import templates
+
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
-# prevent information disclosure
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    return templates.TemplateResponse(
-        request=Request,
-        name='error.html'
-    )
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    return templates.TemplateResponse(
-        request=Request,
-        name='error.html'
-    )
+app.add_exception_handler(Exception, global_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
