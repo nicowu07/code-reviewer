@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse
 from app.exceptions import global_exception_handler, validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from app.config import templates
+from app.analyzers.bandit import bandit_analyzer
+import tempfile
 
 
 app = FastAPI()
@@ -40,6 +42,10 @@ async def review(request: Request, code: str = Form("")):
         )
     # normal response
     result = f"Received {line_count} lines of code. Analysis coming soon!"
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp_file:
+        temp_file.write(code)
+        temp_file_path = temp_file.name
+    result = bandit_analyzer(temp_file_path)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
