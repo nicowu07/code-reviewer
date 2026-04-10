@@ -19,6 +19,30 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+Set up the database:
+
+```bash
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres psql
+```
+
+Inside psql:
+
+```sql
+CREATE DATABASE code_reviewer;
+CREATE USER your_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE code_reviewer TO your_user;
+GRANT ALL ON SCHEMA public TO your_user;
+\q
+```
+
+Create your `.env` file:
+
+```bash
+echo "DATABASE_URL=postgresql://your_user:your_password@localhost:5432/code_reviewer" > .env
+```
+
+
 ## 🚀 Try it out
 ```bash
 uvicorn main:app --reload

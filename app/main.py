@@ -4,10 +4,13 @@ from app.exceptions import global_exception_handler, validation_exception_handle
 from fastapi.exceptions import RequestValidationError
 from app.config import templates
 from app.analyzers.bandit import bandit_analyzer
+from app.database.connection import Base, data_engine
+from app.database import models
 import tempfile
 
 
 app = FastAPI()
+Base.metadata.create_all(bind=data_engine)
 
 app.add_exception_handler(Exception, global_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
