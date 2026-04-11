@@ -12,10 +12,7 @@ def bandit_analyzer(filePath):
     if result.returncode == 2:
         return f"Error running Bandit: {result.stderr}"
     issue_num, issues, returnCode = parse_bandit_output(result.stdout)
-    if returnCode:
-        return "Parsing result failed"
-    else:
-        return "Analyse finished, get results (link)"
+    return issue_num, issues, returnCode
 
 def parse_bandit_output(jsonOutput):
     try:
