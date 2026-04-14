@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Results | Code Reviewer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --bg-top: #f8fbff;
+      --bg-bottom: #fff4ea;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #0f1c2e;
+      --muted: #4c596d;
+      --high: #ff4d4f;
+      --medium: #ff9f1a;
+      --low: #22b573;
+      --accent: #0077ff;
+      --border: #d9e2f2;
+      --shadow: 0 20px 40px rgba(25, 64, 122, 0.12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Outfit", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #d6ecff 0%, transparent 48%),
+        radial-gradient(circle at 100% 100%, #ffe7cc 0%, transparent 42%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+      display: flex;
+      justify-content: center;
+      padding: 26px;
+    }
+
+    .container {
+      width: min(1080px, 100%);
+      animation: fade-in 0.45s ease;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .chip-row {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: #f4f7fd;
+      color: #1b365f;
+      border: 1px solid #d8e2f3;
+      border-radius: 999px;
+      padding: 8px 12px;
+    }
+
+    .severity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .severity-card {
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      transform: translateY(0);
+      transition: transform 0.2s ease;
+    }
+
+    .severity-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .severity-title {
+      margin: 0;
+      font-weight: 700;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      opacity: 0.95;
+    }
+
+    .severity-number {
+      margin: 8px 0 0;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .high {
+      border-color: #ffc5c5;
+      background: linear-gradient(170deg, #fff1f1, #ffffff);
+      color: #811a1b;
+    }
+
+    .medium {
+      border-color: #ffe3b1;
+      background: linear-gradient(170deg, #fff7ea, #ffffff);
+      color: #7a4a00;
+    }
+
+    .low {
+      border-color: #c3ecd9;
+      background: linear-gradient(170deg, #f0fff7, #ffffff);
+      color: #0a5a36;
+    }
+
+    .total {
+      border-color: #c8dfff;
+      background: linear-gradient(170deg, #ecf5ff, #ffffff);
+      color: #11417f;
+    }
+
+    .issues-wrap {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .issues-header {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .issue-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .issue {
+      border: 1px solid #dbe4f3;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .issue-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+
+    .pill-high {
+      color: #9d1214;
+      background: #ffe5e5;
+      border-color: #ffc2c2;
+    }
+
+    .pill-medium {
+      color: #8f5600;
+      background: #fff1d8;
+      border-color: #ffd89b;
+    }
+
+    .pill-low {
+      color: #0b6b3f;
+      background: #ddf8e8;
+      border-color: #b8ebce;
+    }
+
+    .pill-confidence {
+      color: #1d4c88;
+      background: #e9f3ff;
+      border-color: #c5defc;
+    }
+
+    .issue-text {
+      margin: 0 0 8px;
+      font-size: 0.98rem;
+      color: #1c2f4d;
+    }
+
+    pre {
+      margin: 0;
+      background: #0f1826;
+      color: #f2f5ff;
+      padding: 12px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .empty {
+      border: 1px solid #bce3cb;
+      background: #ebfff2;
+      color: #0f5130;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 600;
+    }
+
+    .error {
+      border: 1px solid #ffc6c6;
+      background: #fff0f0;
+      color: #8c1213;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: #f2f6ff;
+      color: #1b3f7a;
+      border-color: #ceddf5;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .issues-wrap,
+      .severity-card {
+        padding: 14px;
+      }
+
+      .chip {
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Code Review Results</h1>
+      <p class="subtitle">Security summary generated from Bandit scan output.</p>
+      {% if scan %}
+      <div class="chip-row">
+        <span class="chip">Scan #{{ scan.id }}</span>
+        <span class="chip">Lines: {{ scan.lines_of_code }}</span>
+        {% if scan.created_at %}
+          <span class="chip">Created: {{ scan.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    </section>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if scan %}
+    {% set total_issues = scan.severity_high + scan.severity_medium + scan.severity_low %}
+    <section class="severity-grid">
+      <article class="severity-card high">
+        <p class="severity-title">High Severity</p>
+        <p class="severity-number">{{ scan.severity_high }}</p>
+      </article>
+      <article class="severity-card medium">
+        <p class="severity-title">Medium Severity</p>
+        <p class="severity-number">{{ scan.severity_medium }}</p>
+      </article>
+      <article class="severity-card low">
+        <p class="severity-title">Low Severity</p>
+        <p class="severity-number">{{ scan.severity_low }}</p>
+      </article>
+      <article class="severity-card total">
+        <p class="severity-title">Total Issues</p>
+        <p class="severity-number">{{ total_issues }}</p>
+      </article>
+    </section>
+
+    <section class="issues-wrap">
+      <h2 class="issues-header">Issue Details</h2>
+
+      {% if scan.issues and scan.issues|length > 0 %}
+      <ul class="issue-list">
+        {% for issue in scan.issues %}
+        {% set sev = issue.issue_severity|lower %}
+        <li class="issue">
+          <div class="issue-top">
+            {% if sev == 'high' %}
+              <span class="pill pill-high">High</span>
+            {% elif sev == 'medium' %}
+              <span class="pill pill-medium">Medium</span>
+            {% else %}
+              <span class="pill pill-low">Low</span>
+            {% endif %}
+            <span class="pill pill-confidence">Confidence: {{ issue.issue_confidence }}</span>
+          </div>
+          <p class="issue-text">{{ issue.issue_text }}</p>
+          {% if issue.code %}
+          <pre>{{ issue.code }}</pre>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty">No issues detected in this scan. Great job!</div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <div class="actions">
+      <a class="btn" href="/">Run Another Review</a>
+      <a class="btn secondary" href="/">Back to Home</a>
+    </div>
+  </main>
+</body>
+</html>

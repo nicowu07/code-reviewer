@@ -5,25 +5,197 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Reviewer</title>
   <style>
-    body { font-family: sans-serif; max-width: 860px; margin: 48px auto; padding: 0 24px; color: #1a1a1a; }
-    h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-    p { color: #666; font-size: 14px; margin-top: 4px; }
-    textarea { width: 100%; height: 320px; font-family: monospace; font-size: 13px; padding: 12px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; resize: vertical; }
-    button { margin-top: 12px; padding: 10px 28px; background: #1a1a1a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
-    button:hover { background: #333; }
-    .result { margin-top: 28px; padding: 16px; background: #f6f8fa; border: 1px solid #e0e0e0; border-radius: 6px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    :root {
+      --bg-top: #f8fbff;
+      --bg-bottom: #fff4ea;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #0f1c2e;
+      --muted: #4c596d;
+      --accent: #0077ff;
+      --accent-hover: #005fd1;
+      --border: #d9e2f2;
+      --shadow: 0 20px 40px rgba(25, 64, 122, 0.12);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Outfit", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #d6ecff 0%, transparent 48%),
+        radial-gradient(circle at 100% 100%, #ffe7cc 0%, transparent 42%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+      display: flex;
+      justify-content: center;
+      padding: 26px;
+    }
+
+    .container {
+      width: min(980px, 100%);
+      animation: fade-in 0.45s ease;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .editor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: #214368;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 360px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      padding: 14px;
+      border: 1px solid #cfdcf2;
+      border-radius: 12px;
+      background: #fdfefe;
+      color: #12243f;
+      resize: vertical;
+      outline: none;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: #9ec3ff;
+      box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      color: #51627a;
+      font-size: 0.88rem;
+      margin: 0;
+    }
+
+    button {
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border-radius: 10px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.84rem;
+      white-space: pre-wrap;
+      border: 1px solid #ffd89b;
+      background: #fff7ea;
+      color: #7a4a00;
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .editor-card {
+        padding: 14px;
+      }
+
+      textarea {
+        min-height: 280px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Code Reviewer</h1>
-  <p>Paste your Python code and get a security analysis.</p>
-  <form action="/review" method="post">
-    <textarea name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
-    <br>
-    <button type="submit">Review code</button>
-  </form>
-  {% if result %}
-  <div class="result">{{ result }}</div>
-  {% endif %}
+  <main class="container">
+    <section class="hero">
+      <h1>Code Security Reviewer</h1>
+      <p class="subtitle">Paste your Python code and get a clear Bandit-based security report with color-coded issue severity.</p>
+    </section>
+
+    <section class="editor-card">
+      <form action="/review" method="post">
+        <label for="code">Your Python Code</label>
+        <textarea id="code" name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
+        <div class="actions">
+          <p class="hint">Max input size: 50,000 characters.</p>
+          <button type="submit">Review Code</button>
+        </div>
+      </form>
+
+      {% if result %}
+      <div class="result">{{ result }}</div>
+      {% endif %}
+    </section>
+  </main>
 </body>
 </html>
