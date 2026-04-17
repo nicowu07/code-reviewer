@@ -49,6 +49,8 @@ uvicorn main:app --reload
 ```
 Open http://localhost:8000 — you'll see your app running. Paste some code, click the button, it responds.
 
-<img src="images/image.png" alt="webpage" width="700"/>
-
+<p align="center">
+  <img src="images/frontPage.png" alt="webpage" width="700"/>
+  <img src="images/resultPage.png" alt="webpage" width=660"/>
+</p>
 
