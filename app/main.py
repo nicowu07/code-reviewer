@@ -70,7 +70,7 @@ async def review(request: Request, code: str = Form(""), db = Depends(get_db)):
     return RedirectResponse(url=f"/results/{scan.id}", status_code=303)
 
 @app.get("/results/{scan_id}", response_class=HTMLResponse)
-async def results(request: Request, scan_id: int, db = Depends(get_db)):
+async def results(request: Request, scan_id: str, db = Depends(get_db)):
     scan = db.query(Scan).filter(Scan.id == scan_id).first()
     if not scan:
         return templates.TemplateResponse(
