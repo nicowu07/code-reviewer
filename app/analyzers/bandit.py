@@ -10,7 +10,7 @@ def bandit_analyzer(filePath):
     )
     os.remove(filePath)
     if result.returncode == 2:
-        return f"Error running Bandit: {result.stderr}"
+        return [], [], 2
     issue_num, issues, returnCode = parse_bandit_output(result.stdout)
     return issue_num, issues, returnCode
 
