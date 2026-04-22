@@ -148,6 +148,50 @@
       color: #7a4a00;
     }
 
+    .tab-bar {
+      text-align: center;
+    }
+
+    .tab-btn {
+      background-color: #fff;
+      color:#005fd1;
+      border-radius: 10px 10px 0 0;
+    }
+    
+    .tab-btn:hover {
+    background-color: #b8cce8;
+    transform: translateY(-1px);
+    }
+    .active {
+      background-color: #cfdcf2;
+    }
+    .file-btn {
+    display: inline-block;
+    cursor: pointer;
+    background-color: #f2f6ff;
+    color: #1b3f7a;
+    border: 1px solid #ceddf5;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    }
+
+    .file-btn:hover {
+    background-color: #dce8ff;
+    transform: translateY(-1px);
+    }
+
+    .file-upload-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border: 2px dashed #cfdcf2;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    }
     @keyframes fade-in {
       from {
         opacity: 0;
@@ -174,28 +218,65 @@
       }
     }
   </style>
+<script>
+  function showTab(tabName) {
+    // hide all tabs
+    document.getElementById('paste-tab').style.display = 'none'
+    document.getElementById('upload-tab').style.display = 'none'
+    // show selected tab
+    document.getElementById(tabName).style.display = 'block'
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'))
+    document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active')
+    //change the file name when uploaded
+    document.getElementById('file-input').addEventListener('change', function() {
+    const fileName = this.files[0] ? this.files[0].name : 'No file chosen'
+    document.getElementById('file-name').textContent = fileName
+})
+  }
+</script>
 </head>
 <body>
   <main class="container">
     <section class="hero">
       <h1>Code Security Reviewer</h1>
-      <p class="subtitle">Paste your Python code and get a security report!</p>
+      <p class="subtitle">Paste your Python code or upload a file and get a security report!</p>
     </section>
-
-    <section class="editor-card">
-      <form action="/review" method="post">
-        <label for="code">Your Python Code</label>
-        <textarea id="code" name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
-        <div class="actions">
-          <p class="hint">Max input size: 50,000 characters.</p>
-          <button type="submit">Review Code</button>
-        </div>
-      </form>
-
+    <div class="tab-bar">
+      <button onclick="showTab('paste-tab')" class="tab-btn active">Paste Code</button>
+      <button onclick="showTab('upload-tab')" class="tab-btn">Upload File</button>
+    </div>
+    <div id="paste-tab" style="display: block;">
+      <section class="editor-card">
+        <form action="/review" method="post">
+          <label for="code">Your Python Code</label>
+          <textarea id="code" name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
+          <div class="actions">
+            <p class="hint">Max input size: 50,000 characters.</p>
+            <button type="submit">Review Code</button>
+          </div>
+        </form>
+      </section>
+    </div>
+    <div id="upload-tab" style="display: none;">
+      <section class="upload-card editor-card">
+        <form action="/review" method="post" enctype="multipart/form-data">
+          <div class="file-upload-area">
+            <input type="file" name="file" style="display:none" id="file-input">
+            <label for="file-input" class="file-btn">Choose File</label>
+            <span id="file-name">No file chosen</span>
+          </div>
+          <div class="actions">
+            <p class="hint">Accepted: .py and .ipynb files only</p>
+            <button type="submit">Review Code</button>
+          </div>
+          
+        </form>
+      </section>
+    </div>
       {% if result %}
       <div class="result">{{ result }}</div>
       {% endif %}
-    </section>
+
   </main>
 </body>
 </html>
