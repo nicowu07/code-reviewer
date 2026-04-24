@@ -7,6 +7,7 @@ from app.config import templates
 from app.analyzers.bandit import bandit_analyzer
 from app.database.connection import Base, data_engine, get_db
 from app.database.models import Scan
+from app.logger import logger
 
 import tempfile
 
@@ -27,9 +28,11 @@ async def home(request: Request):
 
 @app.post("/review", response_class=HTMLResponse)
 async def review(request: Request, code: str = Form(""), file: UploadFile = File(None), db = Depends(get_db)):
+    logger.info("Code review requested by %s", request.client.host)
     if file and file.filename:
         if not (file.filename.endswith('.py') or file.filename.endswith('.ipynb')):
             result = "Please upload a python file!"
+            logger.warning(f"Unsupported file type uploaded: {file.filename}")
             return templates.TemplateResponse(
                 request=request,
                 name='index.html',
@@ -40,6 +43,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
             code = contents.decode("utf-8")
         except UnicodeDecodeError:
             result = "File decoding failed! Please ensure the file is a valid UTF-8 encoded text file."
+            logger.warning(f"Failed to decode file: {file.filename}")
             return templates.TemplateResponse(
                 request=request,
                 name='index.html',
@@ -50,6 +54,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
     # code limit check
     if char_count > 50000:
         result = "Code limit reached, Please split in several submits!"
+        logger.warning(f"Code submission exceeded character limit: {char_count} characters")
         return templates.TemplateResponse(
             request=request,
             name='index.html',
@@ -58,6 +63,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
     # empty code check
     elif char_count == 0:
         result = "No code or file submitted."
+        logger.warning("No code or file submitted.")
         return templates.TemplateResponse(
             request=request,
             name='index.html',
@@ -70,6 +76,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
     issue_num, issues, returnCode = bandit_analyzer(temp_file_path)
     if returnCode == 2:
         result = "Analysis failed!"
+        logger.error("Bandit analysis failed for the submitted code.")
         return templates.TemplateResponse(
             request=request,
             name='index.html',
@@ -77,6 +84,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
         )
     elif returnCode == 1:
         result = "Result parsing failed!"
+        logger.error("Failed to parse Bandit output for the submitted code.")
         return templates.TemplateResponse(
             request=request,
             name='index.html',
@@ -92,6 +100,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
     db.add(scan)
     db.commit()
     db.refresh(scan)
+    logger.info(f"Scan completed and stored with ID: {scan.id}")
     return RedirectResponse(url=f"/results/{scan.id}", status_code=303)
 
 @app.get("/results/{scan_id}", response_class=HTMLResponse)
