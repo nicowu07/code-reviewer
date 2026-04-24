@@ -36,7 +36,15 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
                 context={"result":result, "code": ""}
             )
         contents = await file.read()
-        code = contents.decode("utf-8")
+        try:
+            code = contents.decode("utf-8")
+        except UnicodeDecodeError:
+            result = "File decoding failed! Please ensure the file is a valid UTF-8 encoded text file."
+            return templates.TemplateResponse(
+                request=request,
+                name='index.html',
+                context={"result": result, "code": ""}
+            )
     line_count = len(code.splitlines())
     char_count = len(code)
     # code limit check
@@ -56,7 +64,6 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
             context={"result":result, "code": ""}
         )
     # normal response
-    result = f"Received {line_count} lines of code. Analysis coming soon!"
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp_file:
         temp_file.write(code)
         temp_file_path = temp_file.name

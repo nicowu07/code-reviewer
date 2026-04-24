@@ -3,16 +3,20 @@ import os
 import json
 
 def bandit_analyzer(filePath):
-    result = subprocess.run(
-        ["bandit", "-r", filePath, "-f", "json"],
-        capture_output=True,
-        text=True
-    )
-    os.remove(filePath)
-    if result.returncode == 2:
-        return [], [], 2
-    issue_num, issues, returnCode = parse_bandit_output(result.stdout)
-    return issue_num, issues, returnCode
+    try:
+        result = subprocess.run(
+            ["bandit", "-r", filePath, "-f", "json"],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        if result.returncode == 2:
+            return [], [], 2
+        issue_num, issues, returnCode = parse_bandit_output(result.stdout)
+        return issue_num, issues, returnCode
+    finally:
+            if os.path.exists(filePath):
+                os.remove(filePath)
 
 def parse_bandit_output(jsonOutput):
     try:
