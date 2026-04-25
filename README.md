@@ -40,6 +40,8 @@ Create your `.env` file:
 
 ```bash
 echo "DATABASE_URL=postgresql://your_user:your_password@localhost:5432/code_reviewer" > .env
+# we are using GROQ for the LLM api for now
+echo "GROQ_API_KEY=yourapi" >.env
 ```
 
 
