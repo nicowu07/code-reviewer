@@ -8,6 +8,7 @@ from app.analyzers.bandit import bandit_analyzer
 from app.database.connection import Base, data_engine, get_db
 from app.database.models import Scan
 from app.logger import logger
+from app.config import CODE_LIMIT
 
 import tempfile
 
@@ -52,7 +53,7 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
     line_count = len(code.splitlines())
     char_count = len(code)
     # code limit check
-    if char_count > 50000:
+    if char_count > CODE_LIMIT:
         result = "Code limit reached, Please split in several submits!"
         logger.warning(f"Code submission exceeded character limit: {char_count} characters")
         return templates.TemplateResponse(
