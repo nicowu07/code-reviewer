@@ -13,4 +13,5 @@ class Scan(Base):
     severity_medium = Column(Integer)
     severity_low = Column(Integer)
     issues = Column(JSON)
+    ai_analysis = Column(JSON, nullable=True)
 

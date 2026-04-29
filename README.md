@@ -34,6 +34,9 @@ CREATE USER your_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE code_reviewer TO your_user;
 GRANT ALL ON SCHEMA public TO your_user;
 \q
+sudo -u postgres psql -d code_reviewer
+GRANT ALL ON SCHEMA public TO your_user;
+\q
 ```
 
 Create your `.env` file:

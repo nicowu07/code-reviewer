@@ -9,6 +9,7 @@ from app.database.connection import Base, data_engine, get_db
 from app.database.models import Scan
 from app.logger import logger
 from app.config import CODE_LIMIT
+from app.analyzers.ai import ai_analyzer
 
 import tempfile
 
@@ -91,12 +92,17 @@ async def review(request: Request, code: str = Form(""), file: UploadFile = File
             name='index.html',
             context={"result":result, "code": ""}
         )
+    ai_result = ai_analyzer(issues)
+    if "error" in ai_result:
+        logger.error(f"AI analysis failed: {ai_result['error']}")
+        ai_result = None
     scan = Scan(
         lines_of_code=line_count,
         severity_high=issue_num.get("SEVERITY.HIGH", 0),
         severity_medium=issue_num.get("SEVERITY.MEDIUM", 0),
         severity_low=issue_num.get("SEVERITY.LOW", 0),
-        issues=issues
+        issues=issues,
+        ai_analysis=ai_result
     )
     db.add(scan)
     db.commit()
