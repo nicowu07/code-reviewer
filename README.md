@@ -56,6 +56,6 @@ Open http://localhost:8000 — you'll see your app running. Paste some code, cli
 
 <p align="center">
   <img src="images/frontPage.png" alt="webpage" width="700"/>
-  <img src="images/resultPage.png" alt="webpage" width=660"/>
+  <img src="images/resultPage2.png" alt="webpage" width=660"/>
 </p>
 

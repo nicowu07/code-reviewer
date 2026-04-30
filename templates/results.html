@@ -257,6 +257,28 @@
       margin-bottom: 18px;
     }
 
+    .ai {
+      margin-top: 12px;
+      padding: 12px;
+      background: linear-gradient(135deg, #f0ebff, #ffffff);
+      border: 1px solid #d4bbff;
+      border-radius: 10px;
+      border-left: 4px solid #7c3aed;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      
+    }
+
+    .ai-title {
+      font-weight: 700;
+      color: #5b21b6;
+      font-size: 0.95rem;
+    }
+
     .actions {
       margin-top: 18px;
       display: flex;
@@ -361,8 +383,8 @@
 
       {% if scan.issues and scan.issues|length > 0 %}
       <ul class="issue-list">
-        {% for issue in scan.issues %}
-        {% set sev = issue.issue_severity|lower %}
+        {% for item in combined %}
+        {% set sev = item.issue_severity|lower %}
         <li class="issue">
           <div class="issue-top">
             {% if sev == 'high' %}
@@ -372,11 +394,30 @@
             {% else %}
               <span class="pill pill-low">Low</span>
             {% endif %}
-            <span class="pill pill-confidence">Confidence: {{ issue.issue_confidence }}</span>
+            <span class="pill pill-confidence">Confidence: {{ item.issue_confidence }}</span>
           </div>
-          <p class="issue-text">{{ issue.issue_text }}</p>
-          {% if issue.code %}
-          <pre>{{ issue.code }}</pre>
+          <p class="issue-text">{{ item.issue_text }}</p>
+          {% if item.code %}
+          <pre>{{ item.code }}</pre>
+          {% endif %}
+          {% if item.ai_analysis %}
+          <div class="ai">
+            <div class="ai-header">
+                <p class="ai-title">✨ AI suggestions</p>
+                {% set pri = item.ai_analysis.priority %}
+                {% if pri == 1 %}
+                    <span class="pill pill-high">FIX ASAP</span>
+                {% elif pri == 2 %}
+                    <span class="pill pill-medium">FIX Before next release</span>
+                {% else %}
+                    <span class="pill pill-low">Fix When Possible</span>
+                {% endif %}
+            </div>
+            <p class="issue-text">{{ item.ai_analysis.explanation }}</p>
+            <pre>{{ item.ai_analysis.fix }}</pre>
+            <p class="issue-text">{{ item.ai_analysis.fix_reason }}</p>
+          </div>
+            
           {% endif %}
         </li>
         {% endfor %}

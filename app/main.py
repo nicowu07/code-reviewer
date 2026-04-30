@@ -120,8 +120,17 @@ async def results(request: Request, scan_id: str, db = Depends(get_db)):
             context={"error":"The scan id not found."}
         )
     else:
+        combined = []
+        if scan.ai_analysis:
+            for i, issue in enumerate(scan.issues):
+                item = dict(issue)
+                for analysis in scan.ai_analysis:
+                    if i == analysis["issue_index"]:
+                        item["ai_analysis"] = analysis
+                        break
+                combined.append(item)
         return templates.TemplateResponse(
             request=request,
             name='results.html',
-            context={"scan": scan}
+            context={"scan": scan, "combined": combined}
         )
