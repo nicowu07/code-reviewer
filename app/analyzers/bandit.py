@@ -32,6 +32,7 @@ def parse_bandit_output(jsonOutput):
         detail["issue_confidence"] = i["issue_confidence"]
         detail["issue_severity"] = i["issue_severity"]
         detail["issue_text"] = i["issue_text"]
+        detail["test_name"] = i["test_name"]
         issues.append(detail)
     returnCode = 0
     return issue_num, issues, returnCode
