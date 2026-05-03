@@ -339,98 +339,38 @@
 </head>
 <body>
   <main class="container">
-    <section class="hero">
-      <h1>Code Review Results</h1>
-      <p class="subtitle">Security summary generated from Bandit scan output.</p>
-      {% if scan %}
-      <div class="chip-row">
-        <span class="chip">Scan #{{ scan.id }}</span>
-        <span class="chip">Lines: {{ scan.lines_of_code }}</span>
-        {% if scan.created_at %}
-          <span class="chip">Created: {{ scan.created_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}</span>
-        {% endif %}
-      </div>
-      {% endif %}
-    </section>
+    
 
-    {% if error %}
-      <div class="error">{{ error }}</div>
-    {% endif %}
-
-    {% if scan %}
-    {% set total_issues = scan.severity_high + scan.severity_medium + scan.severity_low %}
+    {% if total_scans %}
     <section class="severity-grid">
-      <article class="severity-card high">
-        <p class="severity-title">High Severity</p>
-        <p class="severity-number">{{ scan.severity_high }}</p>
+      <article class="severity-card total">
+        <p class="severity-title">Total Scans</p>
+        <p class="severity-number">{{ total_scans }}</p>
       </article>
-      <article class="severity-card medium">
-        <p class="severity-title">Medium Severity</p>
-        <p class="severity-number">{{ scan.severity_medium }}</p>
-      </article>
-      <article class="severity-card low">
-        <p class="severity-title">Low Severity</p>
-        <p class="severity-number">{{ scan.severity_low }}</p>
-      </article>
+    </section>
+    {% endif %}
+    {% if total_issues %}
+    <section class="severity-grid">
       <article class="severity-card total">
         <p class="severity-title">Total Issues</p>
         <p class="severity-number">{{ total_issues }}</p>
       </article>
     </section>
-
-    <section class="issues-wrap">
-      <h2 class="issues-header">Issue Details</h2>
-
-      {% if scan.issues and scan.issues|length > 0 %}
-      <ul class="issue-list">
-        {% for item in combined %}
-        {% set sev = item.issue_severity|lower %}
-        <li class="issue">
-          <div class="issue-top">
-            {% if sev == 'high' %}
-              <span class="pill pill-high">High</span>
-            {% elif sev == 'medium' %}
-              <span class="pill pill-medium">Medium</span>
-            {% else %}
-              <span class="pill pill-low">Low</span>
-            {% endif %}
-            <span class="pill pill-confidence">Confidence: {{ item.issue_confidence }}</span>
-          </div>
-          <p class="issue-text">{{ item.issue_text }}</p>
-          {% if item.code %}
-          <pre>{{ item.code }}</pre>
+    {% endif %}
+    {% if most_common_issue %}
+    <section class="hero">
+      <h1>Most Common Issue</h1>
+      <div class="chip-row">
+        {% for issue in most_common_issue %}
+          {% if issue.test_name %}
+            <div class="chip">{{ issue.test_name | replace('_', ' ') }} {{ issue.count }}</div>
           {% endif %}
-          {% if item.ai_analysis %}
-          <div class="ai">
-            <div class="ai-header">
-                <p class="ai-title">✨ AI suggestions</p>
-                {% set pri = item.ai_analysis.priority %}
-                {% if pri == 1 %}
-                    <span class="pill pill-high">FIX ASAP</span>
-                {% elif pri == 2 %}
-                    <span class="pill pill-medium">FIX Before next release</span>
-                {% else %}
-                    <span class="pill pill-low">Fix When Possible</span>
-                {% endif %}
-            </div>
-            <p class="issue-text">{{ item.ai_analysis.explanation }}</p>
-            <pre>{{ item.ai_analysis.fix }}</pre>
-            <p class="issue-text">{{ item.ai_analysis.fix_reason }}</p>
-          </div>
-            
-          {% endif %}
-        </li>
         {% endfor %}
-      </ul>
-      {% else %}
-      <div class="empty">No issues detected in this scan. Great job!</div>
-      {% endif %}
+      </div>
     </section>
     {% endif %}
-
     <div class="actions">
-      <a class="btn" href="/">Run Another Review</a>
-      <a class="btn secondary" href="/dashboard">Go to dashboard</a>
+      <a class="btn" href="/">Run A Review</a>
     </div>
   </main>
 </body>
