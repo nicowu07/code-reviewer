@@ -178,6 +178,29 @@
     transition: all 0.2s ease;
     }
 
+    .btn {
+      text-decoration: none;
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+    }
+
+    .btn.secondary {
+      background: #f2f6ff;
+      color: #1b3f7a;
+      border-color: #ceddf5;
+    }
+
     .file-btn:hover {
     background-color: #dce8ff;
     transform: translateY(-1px);
@@ -192,6 +215,12 @@
     border-radius: 12px;
     margin-bottom: 14px;
     }
+
+    .hero-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
     @keyframes fade-in {
       from {
         opacity: 0;
@@ -238,7 +267,10 @@
 <body>
   <main class="container">
     <section class="hero">
-      <h1>Code Security Reviewer</h1>
+      <div class="hero-header">
+        <h1>Code Security Reviewer</h1>
+        <a class="btn" href="/dashboard">Go to Dashboard</a>
+      </div>
       <p class="subtitle">Paste your Python code or upload a file and get a security report!</p>
     </section>
     {% if result %}
@@ -254,7 +286,7 @@
           <label for="code">Your Python Code</label>
           <textarea id="code" name="code" placeholder="Paste your Python code here...">{{ code }}</textarea>
           <div class="actions">
-            <p class="hint">Max input size: 50,000 characters.</p>
+            <p class="hint">Max input size: 100,000 characters.</p>
             <button type="submit">Review Code</button>
           </div>
         </form>
