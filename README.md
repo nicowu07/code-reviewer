@@ -1,6 +1,8 @@
 # Code security reviewer 🛡️
 
 AI-powered code security reviewer built with FastAPI - static analysis + LLM feedback. <br>
+🌐 **Live demo: [code-reviewer.nicotools.fun](https://code-reviewer.nicotools.fun)**
+
 **🚧 Still Under Construction**
 
 ## 🔜 Planned features 
@@ -47,6 +49,19 @@ echo "DATABASE_URL=postgresql://your_user:your_password@localhost:5432/code_revi
 echo "GROQ_API_KEY=yourapi" >.env
 ```
 
+## 🌵 Production Deployment
+
+The app is deployed on DigitalOcean with:
+- **Nginx** as reverse proxy
+- **systemd** to keep the app running as a service
+- **Let's Encrypt** for HTTPS via Certbot
+
+Key commands:
+```bash
+# Start/stop the service
+sudo systemctl start code-reviewer
+sudo systemctl stop code-reviewer
+sudo systemctl status code-reviewer
 
 ## 🚀 Try it out
 ```bash
