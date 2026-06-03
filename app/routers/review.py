@@ -8,6 +8,7 @@ import tempfile
 from app.analyzers.bandit import bandit_analyzer
 from app.analyzers.ai import ai_analyzer
 from app.database.models import Scan
+from app.config import limiter
 
 router = APIRouter()
 
@@ -20,7 +21,9 @@ async def home(request: Request):
     )
 
 @router.post("/review", response_class=HTMLResponse)
+@limiter.limit("1/minute")
 async def review(request: Request, code: str = Form(""), file: UploadFile = File(None), db = Depends(get_db)):
+    print("review called")
     logger.info("Code review requested by %s", request.client.host)
     if file and file.filename:
         if not (file.filename.endswith('.py') or file.filename.endswith('.ipynb')):

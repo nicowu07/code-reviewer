@@ -14,7 +14,11 @@
 </head>
 <body>
   <h1>Oops!</h1>
-  <p>There is something wrong in the server :(</p>
+  {% if message %}
+    <p>{{ message }}</p>
+  {% else %}
+    <p>There is something wrong in the server :(</p>
+  {% endif %}
     <a href="/">Go Back</a>
 </body>
 </html>
